@@ -19,14 +19,7 @@ resource "aws_instance" "jinseong_weba" {
   private_ip             = "10.0.0.11"
   subnet_id              = aws_subnet.jinseong_subnet_01.id
   vpc_security_group_ids = [aws_security_group.jinseong_sg.id]
-  user_data              = <<-EOF
-    #!/bin/bash
-    sudo su -
-    yum install -y httpd
-    echo "JinseongSeo" > /var/www/html/index.html
-    systemctl start httpd
-    EOF
-
+  user_data              = file("./install.sh")
 }
 
 resource "aws_eip" "jinseong_eip_weba" {
@@ -36,4 +29,8 @@ resource "aws_eip" "jinseong_eip_weba" {
   depends_on = [
     aws_internet_gateway.jinseong_igw
   ]
+}
+
+output "public_ip" {
+  value = aws_eip.jinseong_eip_weba.public_ip
 }
